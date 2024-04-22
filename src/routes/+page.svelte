@@ -1,42 +1,64 @@
-<script>
-	import Counter from './Counter.svelte';
+<script lang="ts">
 	import { TodoListItem } from '$lib/components/todoListComponents/todoItem';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
+	import { Button, Card, Input } from 'flowbite-svelte';
 
-	import { Card, Listgroup, Avatar } from 'flowbite-svelte';
-	import { Checkbox } from 'flowbite-svelte';
+	let newTodoInputValue: string = '';
+	$: isTodoInputActive = !!newTodoInputValue.trim();
 
 	let list = [
 		{
 			text: 'Text',
-			isDone: false
+			isDone: false,
+			id: 1
 		},
 		{
 			text: 'huekst',
-			isDone: true
+			isDone: true,
+			id: 2
 		},
 		{
 			text: 'huekst',
-			isDone: true
+			isDone: true,
+			id: 3
 		},
 		{
 			text: 'huekst',
-			isDone: true
+			isDone: true,
+			id: 4
 		},
 		{
 			text: 'huekst',
-			isDone: true
+			isDone: true,
+			id: 5
 		},
 		{
 			text: 'huekst',
-			isDone: true
+			isDone: true,
+			id: 6
 		},
 		{
 			text: 'huekst',
-			isDone: true
+			isDone: true,
+			id: 7
 		}
 	];
+
+	export function removeTodo(id: CustomEvent<number>) {
+		list = list.filter((item) => item.id !== id.detail);
+	}
+
+	function handleInput(event: Event) {
+		const target = event.target as HTMLInputElement;
+		newTodoInputValue = target!.value || '';
+	}
+
+	export function addTodo() {
+		list = [
+			...list,
+			{ text: newTodoInputValue, id: Math.floor(Math.random() * 10), isDone: false }
+		];
+		newTodoInputValue = '';
+	}
 </script>
 
 <svelte:head>
@@ -47,31 +69,45 @@
 <section>
 	<h1>Svelte TODO</h1>
 
-	<Card padding="xl" size="md">
+	<Card padding="xl" size="lg">
 		<div class="mb-4 flex items-center justify-between"></div>
 
 		<div class="flex flex-col">
-			{#each list as item}
-				<TodoListItem checked={item.isDone} label={item.text} />
-			{/each}
-		</div>
+			{#if list.length}
+				{#each list as item}
+					<TodoListItem
+						checked={item.isDone}
+						label={item.text}
+						id={item.id}
+						on:removeItem={removeTodo}
+					/>
+				{/each}
+			{:else}
+				<p>No TODOs yet</p>
+			{/if}
 
-		<!--		<Listgroup items={list} let:item class="border-0 dark:!bg-transparent">-->
-		<!--			<div class="flex items-center space-x-4 rtl:space-x-reverse">-->
-		<!--				<Checkbox on:change={}item.isDone class="flex-shrink-0" />-->
-		<!--				<div class="flex-1 min-w-0">-->
-		<!--					<p class="text-sm font-medium text-gray-900 truncate dark:text-white">-->
-		<!--						{item.name}-->
-		<!--					</p>-->
-		<!--					<p class="text-sm text-gray-500 truncate dark:text-gray-400">-->
-		<!--						{item.email}-->
-		<!--					</p>-->
-		<!--				</div>-->
-		<!--				<div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">-->
-		<!--					{item.value}-->
-		<!--				</div>-->
-		<!--			</div>-->
-		<!--		</Listgroup>-->
+			<div class="add-todo grid h-full grid-cols-2 grid-rows-1 pb-2 pr-2 pt-2">
+				<div class="flex items-center">
+					<Input
+						name="todoText"
+						bind:value={newTodoInputValue}
+						placeholder="Add a todo"
+						on:input={handleInput}
+						on:keypress={(e) => e.key === 'Enter' && addTodo()}
+					/>
+				</div>
+
+				<div class="flex items-center justify-center">
+					<Button
+						class="w-full"
+						type="submit"
+						color="green"
+						disabled={!isTodoInputActive}
+						on:click={addTodo}>Add</Button
+					>
+				</div>
+			</div>
+		</div>
 	</Card>
 </section>
 
@@ -84,23 +120,13 @@
 		flex: 0.6;
 	}
 
+	.add-todo {
+		display: grid;
+		grid-template-columns: 1fr 100px;
+		grid-column-gap: 10px;
+	}
+
 	h1 {
 		width: 100%;
-	}
-
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
 	}
 </style>

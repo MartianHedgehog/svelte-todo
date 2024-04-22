@@ -1,8 +1,15 @@
 <script lang="ts">
 	import { Checkbox, Button } from 'flowbite-svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	export let checked: boolean;
 	export let label: string;
+	export let id: number;
+	const dispatch = createEventDispatcher();
+
+	function onDelete() {
+		dispatch('removeItem', id);
+	}
 </script>
 
 <div class="todo-item grid h-full grid-cols-3 grid-rows-1 border-2 border-gray-200 p-2">
@@ -15,7 +22,7 @@
 	</div>
 
 	<div class="flex items-center justify-center">
-		<Button>Delete</Button>
+		<Button class="w-full" on:click={onDelete}>Delete</Button>
 	</div>
 </div>
 
