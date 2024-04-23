@@ -17,7 +17,7 @@
 		<Checkbox {checked} />
 	</div>
 
-	<div class="flex items-center">
+	<div class="flex items-center whitespace-pre-wrap break-all">
 		{label}
 	</div>
 

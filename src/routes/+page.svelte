@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { TodoListItem } from '$lib/components/todoListComponents/todoItem';
-	import { Button, Card, Input } from 'flowbite-svelte';
+	import { Button, Card, Textarea } from 'flowbite-svelte';
 
 	let newTodoInputValue: string = '';
 	$: isTodoInputActive = !!newTodoInputValue.trim();
@@ -88,7 +88,8 @@
 
 			<div class="add-todo grid h-full grid-cols-2 grid-rows-1 pb-2 pr-2 pt-2">
 				<div class="flex items-center">
-					<Input
+					<Textarea
+						minRows={1}
 						name="todoText"
 						bind:value={newTodoInputValue}
 						placeholder="Add a todo"
