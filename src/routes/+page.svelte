@@ -1,47 +1,33 @@
 <script lang="ts">
-	import { TodoListItem } from '$lib/components/todoListComponents/todoItem';
+	import { filterStore, todoStore } from '$lib/stores/todoStore';
+	import { FILTER_ACTIVE, FILTER_ALL, FILTER_DONE } from '$lib/stores/constants';
+	import { TodoListItem } from '$lib/components/todoListComponents/TodoItem';
 	import { Button, Card, Textarea } from 'flowbite-svelte';
+	import { TodoListFilters } from '$lib/components/todoListComponents/TodoListFilters';
+	import type { todoListT } from '$lib/types/todoList';
 
 	let newTodoInputValue: string = '';
 	$: isTodoInputActive = !!newTodoInputValue.trim();
+	$: amountOfDone = list.filter((item) => item.isDone).length;
+	$: amountOfActive = list.filter((item) => !item.isDone).length;
 
-	let list = [
-		{
-			text: 'Text',
-			isDone: false,
-			id: 1
-		},
-		{
-			text: 'huekst',
-			isDone: true,
-			id: 2
-		},
-		{
-			text: 'huekst',
-			isDone: true,
-			id: 3
-		},
-		{
-			text: 'huekst',
-			isDone: true,
-			id: 4
-		},
-		{
-			text: 'huekst',
-			isDone: true,
-			id: 5
-		},
-		{
-			text: 'huekst',
-			isDone: true,
-			id: 6
-		},
-		{
-			text: 'huekst',
-			isDone: true,
-			id: 7
-		}
-	];
+	$: filter = 'ALL';
+
+	let list: todoListT = [];
+
+	$: filteredList = list.filter((item) => {
+		if (filter === FILTER_ALL) return true;
+		if (filter === FILTER_DONE) return item.isDone;
+		if (filter === FILTER_ACTIVE) return !item.isDone;
+	});
+
+	todoStore.subscribe((store) => {
+		list = store;
+	});
+
+	filterStore.subscribe((store) => {
+		filter = store;
+	});
 
 	export function removeTodo(id: CustomEvent<number>) {
 		list = list.filter((item) => item.id !== id.detail);
@@ -53,10 +39,11 @@
 	}
 
 	export function addTodo() {
-		list = [
+		todoStore.set([
 			...list,
 			{ text: newTodoInputValue, id: Math.floor(Math.random() * 10), isDone: false }
-		];
+		]);
+
 		newTodoInputValue = '';
 	}
 </script>
@@ -70,11 +57,11 @@
 	<h1>Svelte TODO</h1>
 
 	<Card padding="xl" size="lg">
-		<div class="mb-4 flex items-center justify-between"></div>
+		<TodoListFilters />
 
 		<div class="flex flex-col">
-			{#if list.length}
-				{#each list as item}
+			{#if filteredList.length}
+				{#each filteredList as item}
 					<TodoListItem
 						checked={item.isDone}
 						label={item.text}
