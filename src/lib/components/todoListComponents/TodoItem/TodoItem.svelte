@@ -2,7 +2,7 @@
 	import { Checkbox, Button } from 'flowbite-svelte';
 	import { createEventDispatcher } from 'svelte';
 
-	export let checked: boolean;
+	export let isDone: boolean;
 	export let label: string;
 	export let id: number;
 	const dispatch = createEventDispatcher();
@@ -10,11 +10,15 @@
 	function onDelete() {
 		dispatch('removeItem', id);
 	}
+
+	function onToggleIsDone() {
+		dispatch('toggleIsDone', id);
+	}
 </script>
 
 <div class="todo-item grid h-full grid-cols-3 grid-rows-1 border-2 border-gray-200 p-2">
 	<div class="flex items-center justify-center">
-		<Checkbox {checked} />
+		<Checkbox bind:checked={isDone} on:change={onToggleIsDone} />
 	</div>
 
 	<div class="flex items-center whitespace-pre-wrap break-all">

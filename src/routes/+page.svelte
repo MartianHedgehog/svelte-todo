@@ -7,6 +7,7 @@
 	import type { todoListT } from '$lib/types/todoList';
 
 	let newTodoInputValue: string = '';
+
 	$: isTodoInputActive = !!newTodoInputValue.trim();
 	$: amountOfDone = list.filter((item) => item.isDone).length;
 	$: amountOfActive = list.filter((item) => !item.isDone).length;
@@ -29,8 +30,8 @@
 		filter = store;
 	});
 
-	export function removeTodo(id: CustomEvent<number>) {
-		list = list.filter((item) => item.id !== id.detail);
+	export function removeTodo(event: CustomEvent<number>) {
+		list = list.filter((item) => item.id !== event.detail);
 	}
 
 	function handleInput(event: Event) {
@@ -45,6 +46,18 @@
 		]);
 
 		newTodoInputValue = '';
+	}
+
+	export function toggleIsDone(event: CustomEvent<number>) {
+		todoStore.set(
+			list.map((item) => {
+				if (item.id === event.detail) {
+					item.isDone = !item.isDone;
+				}
+
+				return item;
+			})
+		);
 	}
 </script>
 
@@ -63,7 +76,8 @@
 			{#if filteredList.length}
 				{#each filteredList as item}
 					<TodoListItem
-						checked={item.isDone}
+						on:toggleIsDone={toggleIsDone}
+						isDone={item.isDone}
 						label={item.text}
 						id={item.id}
 						on:removeItem={removeTodo}
@@ -73,7 +87,7 @@
 				<p>No TODOs yet</p>
 			{/if}
 
-			<div class="add-todo grid h-full grid-cols-2 grid-rows-1 pb-2 pr-2 pt-2">
+			<div class="add-todo mt-2 grid h-full grid-cols-2 grid-rows-1 pb-2 pr-2 pt-2">
 				<div class="flex items-center">
 					<Textarea
 						minRows={1}
@@ -87,7 +101,7 @@
 
 				<div class="flex items-center justify-center">
 					<Button
-						class="w-full"
+						class="h-full w-full"
 						type="submit"
 						color="green"
 						disabled={!isTodoInputActive}

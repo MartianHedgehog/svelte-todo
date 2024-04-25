@@ -2,12 +2,12 @@ export const testTodos = [
 	{
 		text: 'Buy a coffee',
 		isDone: false,
-		id: 1
+		id: 123
 	},
 	{
 		text: 'Wash the car',
 		isDone: true,
-		id: 2
+		id: 223
 	}
 ];
 
